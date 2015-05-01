@@ -5,12 +5,12 @@ class GridTopo(Topo):
     def build(self, nRows=2, nCols=2):
         self.nRows = nRows
         self.nCols = nCols
-        for row in range(1, nRows + 1):
-            for col in range(1, nCols + 1):
+        for row in range(nRows):
+            for col in range(nCols):
                 host = self.addHost('h%sx%s' % (row, col))
-                if col > 1:
+                if col > 0:
                     self.addLink('h%sx%s' % (row, col - 1), host)
-                if row > 1:
+                if row > 0:
                     self.addLink('h%sx%s' % (row - 1, col), host)
 
     def getPortAndIp(self, hostName, side):
@@ -47,8 +47,8 @@ class GridTopo(Topo):
     def assignIps(self, net):
         """Assign IP addresses to a built network.
            LEFT 10.row.col.2, RIGHT 10.row.col.1, UP 10.row.col.6, DOWN 10.row.col.5"""
-        for row in range(1, self.nRows + 1):
-            for col in range(1, self.nCols + 1):
+        for row in range(self.nRows):
+            for col in range(self.nCols):
                 hostName = 'h%sx%s' % (row, col)
                 host = net.get(hostName)
 
