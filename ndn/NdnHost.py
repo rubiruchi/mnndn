@@ -5,6 +5,9 @@ from NlsrRouting import NlsrRouting
 class NdnHost(Host):
     "NDN host."
     def __init__(self, *opts, **params):
+        """Construct NDN host.
+           fw: forwarder constructor
+           rout: routing constructor"""
         OVERRIDE_DIRS = ['/etc/ndn', '/var/log/ndn', '/var/run', '/root']
         privateDirs = params.get('privateDirs', [])
         privateDirs = [ pd for pd in privateDirs if pd[0] not in OVERRIDE_DIRS ]
@@ -15,7 +18,9 @@ class NdnHost(Host):
         Host.__init__(self, *opts, **params)
         self.cmd('export HOME=/root')
 
+        self.fwConstructor = params.pop('fw', NfdForwarder)
         self.fw = None
+        self.routConstructor = params.pop('rout', NlsrRouting)
         self.rout = None
 
     def openFile(self, fileName, mode):
@@ -48,14 +53,12 @@ class NdnHost(Host):
                 connections += [ (link.intf2, link.intf1) ]
         return connections
 
-    def getFw(self, fw = NfdForwarder, **params):
+    def getFw(self, **params):
         if self.fw is None:
-            self.fw = fw(self, **params)
-            self.fw.start()
+            self.fw = self.fwConstructor(self, **params)
         return self.fw
 
-    def getRout(self, rout = NlsrRouting, **params):
+    def getRout(self, **params):
         if self.rout is None:
-            self.rout = rout(self, **params)
-            self.rout.start()
+            self.rout = self.routConstructor(self, **params)
         return self.rout

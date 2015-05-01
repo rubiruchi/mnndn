@@ -6,7 +6,7 @@ general {
   network /net
   site site
   router %(name)s
-  log-level INFO
+  log-level DEBUG
   log-dir /var/log/ndn/
   seq-dir /var/log/ndn/
 }
@@ -43,16 +43,16 @@ NLSR_CONF_ADVERTISING = """
   prefix %(prefix)s
 """
 
+ROUTE_ORIGIN_NLSR = 128
+
 class NlsrRouting(Routing):
     "NLSR routing daemon."
-    def __init__(self, host, **params):
+    def __init__(self, host):
         """initialize NLSR
-           advertise: [prefix]"""
+           advertised: [prefix]"""
         Routing.__init__(self, host)
         self.isStarted = False
         atexit.register(self.stop)
-
-        self.advertisePrefixes = params.get('advertise', [])
 
     def makeConfig(self):
         neighbors = ''.join([
@@ -64,7 +64,7 @@ class NlsrRouting(Routing):
         advertising = ''.join([
           NLSR_CONF_ADVERTISING % dict(
             prefix=prefix
-          ) for prefix in self.advertisePrefixes
+          ) for prefix in self.advertised
         ])
         return NLSR_CONF % dict(
             name=self.host.name,
@@ -95,8 +95,30 @@ class NlsrRouting(Routing):
         self.log.close()
         self.isStarted = False
 
-    def advertise(self, prefix):
-        raise "not supported"
+    def doAdvertise(self, prefix):
+        if self.isStarted:
+            raise NotImplementedError('runtime advertise is not supported')
 
-    def withdraw(self, prefix):
-        raise "not supported"
+    def doWithdraw(self, prefix):
+        if self.isStarted:
+            raise NotImplementedError('runtime withdraw is not supported')
+
+    def beginGetRoutes(self):
+        return self.host.popen('nfd-status', '-x')
+
+    def endGetRoutes(self, wh):
+        wh.wait()
+        xml, _ = wh.communicate()
+
+        import xml.etree.ElementTree as ET
+        try:
+           x = ET.fromstring(xml)
+        except ET.ParseError:
+           return []
+
+        ns = {'nfdstatus': 'ndn:/localhost/nfd/status/1'}
+        return [
+          ET.tostring(entry.find('nfdstatus:prefix', ns), method='text')
+          for entry in x.iterfind('.//nfdstatus:ribEntry', ns)
+          if entry.find("nfdstatus:routes/nfdstatus:route[nfdstatus:origin='%d']" % ROUTE_ORIGIN_NLSR, ns) is not None
+        ]
