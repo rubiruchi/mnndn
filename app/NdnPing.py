@@ -3,10 +3,13 @@ import os
 
 class NdnPing:
     "NDN reachability testing client."
-    def __init__(self, host, prefix, interval=1000):
+    def __init__(self, host, prefix, interval=1000, clientSpecifier=True):
         self.host = host
         self.prefix = prefix
         self.interval = interval
+        self.clientSpecifier = clientSpecifier
+        if clientSpecifier is True:
+            self.clientSpecifier = self.host.name
 
         self.isStarted = False
         atexit.register(self.stop)
@@ -21,8 +24,12 @@ class NdnPing:
         else:
             self.log = self.host.openFile(logFile, 'w')
 
+        opts = ['-t', '-i', str(self.interval)]
+        if self.clientSpecifier is not False:
+            opts += ['-p', self.clientSpecifier]
+        opts.append(self.prefix)
         from subprocess import STDOUT
-        self.process = self.host.popen('ndnping', '-i', str(self.interval), self.prefix,
+        self.process = self.host.popen('ndnping', *opts,
                                        stderr=STDOUT, stdout=self.log)
 
     def stop(self):
