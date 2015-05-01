@@ -1,5 +1,6 @@
 from mininet.node import Host
 from NfdForwarder import NfdForwarder
+from NlsrRouting import NlsrRouting
 
 class NdnHost(Host):
     "NDN host."
@@ -15,6 +16,7 @@ class NdnHost(Host):
         self.cmd('export HOME=/root')
 
         self.fw = None
+        self.rout = None
 
     def openFile(self, fileName, mode):
         realPath = fileName
@@ -51,3 +53,9 @@ class NdnHost(Host):
             self.fw = fw(self, **params)
             self.fw.start()
         return self.fw
+
+    def getRout(self, rout = NlsrRouting, **params):
+        if self.rout is None:
+            self.rout = rout(self, **params)
+            self.rout.start()
+        return self.rout
