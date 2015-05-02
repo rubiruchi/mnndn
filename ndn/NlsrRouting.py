@@ -81,6 +81,10 @@ class NlsrRouting(Routing):
         configFile.write(self.makeConfig())
         configFile.close()
 
+        # clear logFile
+        logFile = self.host.openFile('/var/log/ndn/nlsr.log', 'w')
+        logFile.close()
+
         self.log = self.host.openFile('/var/log/ndn/nlsr.out', 'w')
         from subprocess import STDOUT
         self.process = self.host.popen('nlsr', '-f', '/etc/ndn/nlsr.conf',
