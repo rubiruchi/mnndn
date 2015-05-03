@@ -6,7 +6,6 @@ from sched import scheduler
 from mininet.log import setLogLevel
 from mininet.net import Mininet
 from mininet.link import TCLink
-from mininet.cli import CLI
 
 from topo import GridTopo
 from ndn import NdnHost,Routing
@@ -97,7 +96,7 @@ def run(args):
 
     convergeTime = Routing.waitForConverge(net)
     if convergeTime is False:
-        print 'Routing is not converged'
+        print 'Routing is not converged.'
         net.stop()
         exit(1)
     print 'Routing is converged in %d seconds.' % convergeTime
