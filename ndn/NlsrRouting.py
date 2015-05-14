@@ -29,6 +29,11 @@ security {
       type any
     }
   }
+  prefix-update-validator {
+    trust-anchor {
+      type any
+    }
+  }
 }
 """
 
