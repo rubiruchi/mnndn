@@ -99,7 +99,7 @@ def run(args):
         print 'Routing is not converged.'
         net.stop()
         exit(1)
-    print 'Routing is converged in %d seconds.' % convergeTime
+    print 'Routing is converged in %d seconds at %d.' % (convergeTime, time.time())
 
     pingServers = []
     pingClients = []
