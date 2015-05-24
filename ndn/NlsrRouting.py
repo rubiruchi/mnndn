@@ -106,11 +106,15 @@ class NlsrRouting(Routing):
 
     def doAdvertise(self, prefix):
         if self.isStarted:
-            raise NotImplementedError('runtime advertise is not supported')
+            out, err, exitcode = self.host.pexec('nlsrc', 'advertise', prefix)
+            if exitcode > 0:
+                raise RuntimeError('nlsrc error: ' + err)
 
     def doWithdraw(self, prefix):
         if self.isStarted:
-            raise NotImplementedError('runtime withdraw is not supported')
+            out, err, exitcode = self.host.pexec('nlsrc', 'withdraw', prefix)
+            if exitcode > 0:
+                raise RuntimeError('nlsrc error: ' + err)
 
     def beginGetRoutes(self):
         return self.host.popen('nfd-status', '-x')

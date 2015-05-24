@@ -16,15 +16,15 @@ class Routing:
         "Advertise a prefix."
         if prefix in self.advertised:
             return
-        self.advertised.add(prefix)
         self.doAdvertise(prefix)
+        self.advertised.add(prefix)
 
     def withdraw(self, prefix):
         "Withdraw a prefix."
         if prefix not in self.advertised:
             return
-        self.advertised.remove(prefix)
         self.doWithdraw(prefix)
+        self.advertised.remove(prefix)
 
     def doAdvertise(self, prefix):
         raise NotImplementedError
