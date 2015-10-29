@@ -13,7 +13,7 @@
     * `ndn-cxx-dev`
     * `nfd`
     * `nlsr`
-    * `ndn-tlv-ping`
+    * `ndn-tools`
 
 3.  clone **mnndn** repository; no installation is necessary
 
