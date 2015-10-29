@@ -21,7 +21,7 @@ class TwoNodeTopo(Topo):
 
 def run():
     topo = TwoNodeTopo()
-    net = Mininet(topo, host=NdnHost)
+    net = Mininet(topo, host=NdnHost, controller=None)
     net.start()
 
     ndndumps = []

@@ -71,7 +71,7 @@ def schedLinkFails(sched, net, linkFails):
 
 def run(args):
     topo = GridTopo(args.rows, args.cols)
-    net = Mininet(topo, host=NdnHost, link=TCLink)
+    net = Mininet(topo, host=NdnHost, link=TCLink, controller=None)
     topo.assignIps(net)
     net.start()
 
