@@ -60,21 +60,26 @@ class NlsrRouting(Routing):
         atexit.register(self.stop)
 
     def makeConfig(self):
-        neighbors = ''.join([
-          NLSR_CONF_NEIGHBOR % dict(
-            name=peerIntf.node.name,
-            faceuri='udp4://%s:6363' % peerIntf.node.IP(str(peerIntf))
-          ) for (myIntf, peerIntf) in self.host.getPeers()
-        ])
-        advertising = ''.join([
+        neighbors = []
+        for (myIntf, peerIntf, ndnPeerIntfs) in self.host.getPeers():
+            for ndnPeerIntf in ndnPeerIntfs:
+                peerIp = ndnPeerIntf.node.IP(str(ndnPeerIntf))
+                if peerIp is None:
+                    continue
+                neighbors.append(
+                  NLSR_CONF_NEIGHBOR % dict(
+                    name=ndnPeerIntf.node.name,
+                    faceuri='udp4://%s:6363' % peerIp
+                  ))
+        advertising = [
           NLSR_CONF_ADVERTISING % dict(
             prefix=prefix
           ) for prefix in self.advertised
-        ])
+        ]
         return NLSR_CONF % dict(
             name=self.host.name,
-            neighbors=neighbors,
-            advertising=advertising
+            neighbors=''.join(neighbors),
+            advertising=''.join(advertising)
           )
 
     def start(self):

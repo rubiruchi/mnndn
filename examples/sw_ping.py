@@ -1,10 +1,11 @@
 #!/usr/bin/python2
-"""Example with 2 hosts directly connected."""
+"""Example with 5 hosts connected on an Ethernet switch."""
 
 import time
+import atexit
 
 from mininet.log import setLogLevel
-from mininet.topo import Topo
+from mininet.topo import SingleSwitchTopo
 from mininet.net import Mininet
 from mininet.cli import CLI
 
@@ -12,18 +13,11 @@ from ndn import NdnHost,Routing
 from app import NdnPingServer
 from tracer import NdnDump
 
-class TwoNodeTopo(Topo):
-    """Two node directly connected topology.
-       This differs from mininet.topo.MinimalTopo in that there's no switch."""
-    def build(self, **params):
-        self.addHost('h1')
-        self.addHost('h2')
-        self.addLink('h1', 'h2')
-
 def run():
-    topo = TwoNodeTopo()
-    net = Mininet(topo, host=NdnHost, controller=None)
+    topo = SingleSwitchTopo(k=5)
+    net = Mininet(topo, host=NdnHost)
     net.start()
+    atexit.register(net.stop)
 
     ndndumps = []
     print 'Start ndndump tracers.'
@@ -46,7 +40,6 @@ def run():
     convergeTime = Routing.waitForConverge(net)
     if convergeTime is False:
         print 'Routing is not converged'
-        net.stop()
         exit(1)
     print 'Routing is converged in %d seconds.' % convergeTime
 
@@ -56,8 +49,6 @@ def run():
         pingServer.start()
 
     CLI(net)
-
-    net.stop()
 
 if __name__ == '__main__':
     setLogLevel('info')

@@ -39,19 +39,35 @@ class NdnHost(Host):
         params['env'] = env
         return Host.popen(self, *opts, **params)
 
+    @staticmethod
+    def __collectNdnPeers(nodeIntf):
+        if isinstance(nodeIntf.node, NdnHost):
+            return [ nodeIntf ]
+        ndnPeerIntfs = []
+        for intf in nodeIntf.node.intfList():
+            link = intf.link
+            if not link:
+                continue
+            intf1, intf2 = link.intf1, link.intf2
+            if intf1.node == nodeIntf.node and intf1 != nodeIntf:
+                ndnPeerIntfs += NdnHost.__collectNdnPeers(intf2)
+            elif intf2.node == nodeIntf.node and intf2 != nodeIntf:
+                ndnPeerIntfs += NdnHost.__collectNdnPeers(intf1)
+        return ndnPeerIntfs
+
     def getPeers(self):
-        "Return (myIntf, peerIntf) for all intfs connecting to."
-        connections = []
+        "Return (myIntf, peerIntf, [ndnHostIntfs]) for all intfs connecting to."
+        peers = []
         for intf in self.intfList():
             link = intf.link
             if not link:
                 continue
             node1, node2 = link.intf1.node, link.intf2.node
             if node1 == self:
-                connections += [ (link.intf1, link.intf2) ]
+                peers += [ (link.intf1, link.intf2, NdnHost.__collectNdnPeers(link.intf2)) ]
             elif node2 == self:
-                connections += [ (link.intf2, link.intf1) ]
-        return connections
+                peers += [ (link.intf2, link.intf1, NdnHost.__collectNdnPeers(link.intf1)) ]
+        return peers
 
     def getFw(self, **params):
         if self.fw is None:
