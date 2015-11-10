@@ -9,17 +9,17 @@ class Forwarder:
 
     def start(self):
         "Start the forwarder."
-        raise "not implemented"
+        raise NotImplementedError
 
     def stop(self):
         "Stop the forwarder."
-        raise "not implemented"
+        raise NotImplementedError
 
     def addFace(self, localIntf, remoteIntf):
         """Add a face.
            returns Face"""
-        raise "not implemented"
+        raise NotImplementedError
 
     def addRoute(self, face, name):
         "Add a route."
-        raise "not implemented"
+        raise NotImplementedError

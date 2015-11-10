@@ -6,11 +6,11 @@ class Routing:
 
     def start(self):
         "Start the routing daemon."
-        raise "not implemented"
+        raise NotImplementedError
 
     def stop(self):
         "Stop the routing daemon."
-        raise "not implemented"
+        raise NotImplementedError
 
     def advertise(self, prefix):
         "Advertise a prefix."

@@ -126,7 +126,7 @@ class NfdForwarder(Forwarder):
         self.isStarted = False
 
     def addFace(self, localIntf, remoteIntf):
-        raise "not implemented"
+        raise NotImplementedError
 
     def addRoute(self, face, name):
-        raise "not implemented"
+        raise NotImplementedError
