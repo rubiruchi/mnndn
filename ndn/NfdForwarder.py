@@ -130,3 +130,11 @@ class NfdForwarder(Forwarder):
 
     def addRoute(self, face, name):
         raise NotImplementedError
+
+    def setStrategy(self, prefix, strategy):
+        if not self.isStarted:
+            raise "setStrategy before starting: not implemented"
+
+        out, err, exitcode = self.host.pexec('nfdc', 'set-strategy', prefix, strategy)
+        if exitcode > 0:
+            raise RuntimeError('nfdc error: ' + err)
