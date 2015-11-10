@@ -18,9 +18,9 @@ class NdnHost(Host):
         Host.__init__(self, *opts, **params)
         self.cmd('export HOME=/root')
 
-        self.fwConstructor = params.pop('fw', NfdForwarder)
+        self.fwCtor = params.pop('fw', NfdForwarder)
         self.fw = None
-        self.routConstructor = params.pop('rout', NlsrRouting)
+        self.routCtor = params.pop('rout', NlsrRouting)
         self.rout = None
 
     def openFile(self, fileName, mode):
@@ -71,10 +71,10 @@ class NdnHost(Host):
 
     def getFw(self, **params):
         if self.fw is None:
-            self.fw = self.fwConstructor(self, **params)
+            self.fw = self.fwCtor(self, **params)
         return self.fw
 
     def getRout(self, **params):
         if self.rout is None:
-            self.rout = self.routConstructor(self, **params)
+            self.rout = self.routCtor(self, **params)
         return self.rout

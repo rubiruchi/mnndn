@@ -63,7 +63,7 @@ class NlsrRouting(Routing):
         neighbors = []
         for (myIntf, peerIntf, ndnPeerIntfs) in self.host.getPeers():
             for ndnPeerIntf in ndnPeerIntfs:
-                peerIp = ndnPeerIntf.node.IP(str(ndnPeerIntf))
+                peerIp = ndnPeerIntf.node.IP(ndnPeerIntf)
                 if peerIp is None:
                     continue
                 neighbors.append(
