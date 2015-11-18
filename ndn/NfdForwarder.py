@@ -1,5 +1,6 @@
-from Forwarder import Face,Forwarder
+from Forwarder import Face, Forwarder
 import atexit
+import re
 
 NFD_CONF = """
 general
@@ -125,16 +126,26 @@ class NfdForwarder(Forwarder):
         self.log.close()
         self.isStarted = False
 
-    def addFace(self, localIntf, remoteIntf):
-        raise NotImplementedError
-
-    def addRoute(self, face, name):
-        raise NotImplementedError
-
-    def setStrategy(self, prefix, strategy):
+    def nfdc(self, *args):
         if not self.isStarted:
-            raise "setStrategy before starting: not implemented"
+            raise RuntimeError('nfdc is unavailable before starting NFD')
 
-        out, err, exitcode = self.host.pexec('nfdc', 'set-strategy', prefix, strategy)
+        out, err, exitcode = self.host.pexec('nfdc', *args)
         if exitcode > 0:
             raise RuntimeError('nfdc error: ' + err)
+        return out, err, exitcode
+
+    def addFace(self, localIntf, remoteIntf):
+        remoteUri = 'udp4://%s:%d' % (remoteIntf.node.IP(remoteIntf), 6363)
+        out, _, _ = self.nfdc('create', '-P', remoteUri)
+        match = re.search('FaceId:\s(\d+),', out)
+        if not match:
+            raise RuntimeError('cannot parse nfdc output: ' + out)
+        faceId = int(match.group(1))
+        return Face(faceId, localIntf, remoteIntf)
+
+    def addRoute(self, face, name):
+        self.nfdc('register', name, str(face.id))
+
+    def setStrategy(self, prefix, strategy):
+        self.nfdc('set-strategy', prefix, strategy)

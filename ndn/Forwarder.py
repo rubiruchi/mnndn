@@ -1,6 +1,8 @@
 class Face:
-    def __init__(self, faceId):
+    def __init__(self, faceId, localIntf, remoteIntf):
         self.id = faceId
+        self.localIntf = localIntf
+        self.remoteIntf = remoteIntf
 
 class Forwarder:
     "NDN forwarder."
@@ -23,3 +25,18 @@ class Forwarder:
     def addRoute(self, face, name):
         "Add a route."
         raise NotImplementedError
+
+    @staticmethod
+    def connectPeers(net):
+        """Create faces on every NdnHost toward each of its peers.
+           return [ face ]"""
+        from NdnHost import NdnHost
+
+        faces = []
+        for host in net.hosts:
+            if not isinstance(host, NdnHost):
+                continue
+            for (myIntf, peerIntf, ndnPeerIntfs) in host.getPeers():
+                for ndnPeerIntf in ndnPeerIntfs:
+                    faces.append(host.getFw().addFace(myIntf, ndnPeerIntf))
+        return faces
