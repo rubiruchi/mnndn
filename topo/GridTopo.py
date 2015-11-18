@@ -56,7 +56,7 @@ class GridTopo(Topo):
 
     def getIp(self, hostName, side):
         return self.getPortAndIp(hostName, side)[1]
-        
+
     def assignIps(self, net):
         """Assign IP addresses to a built network.
            LEFT 10.row.col.2, RIGHT 10.row.col.1, UP 10.row.col.6, DOWN 10.row.col.5"""

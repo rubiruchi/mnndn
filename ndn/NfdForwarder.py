@@ -28,44 +28,44 @@ face_system
 {
   unix
   {
-    path /var/run/nfd.sock 
+    path /var/run/nfd.sock
   }
 
   tcp
   {
-    listen no 
-    port 6363 
-    enable_v4 yes 
-    enable_v6 yes 
+    listen no
+    port 6363
+    enable_v4 yes
+    enable_v6 yes
   }
 
   udp
   {
-    port 6363 
-    enable_v4 yes 
-    enable_v6 no 
+    port 6363
+    enable_v4 yes
+    enable_v6 no
 
     idle_timeout 600
 
     keep_alive_interval 25
 
-    mcast yes 
-    mcast_port 56363 
-    mcast_group 224.0.23.170 
+    mcast yes
+    mcast_port 56363
+    mcast_group 224.0.23.170
   }
 
   ether
   {
-    mcast no 
-    mcast_group 01:00:5E:00:17:AA 
+    mcast no
+    mcast_group 01:00:5E:00:17:AA
   }
 
   websocket
   {
-    listen no 
-    port 9696 
-    enable_v4 yes 
-    enable_v6 yes 
+    listen no
+    port 9696
+    enable_v4 yes
+    enable_v6 yes
   }
 }
 
@@ -73,8 +73,8 @@ authorizations
 {
   authorize
   {
-    certfile any 
-    privileges 
+    certfile any
+    privileges
     {
       faces
       fib
