@@ -1,14 +1,14 @@
 from mininet.topo import Topo
 
 class GridTopo(Topo):
-    "Grid topology."
+    """Grid topology."""
 
     MAX_NROWS = 256 # limited by IP assignment
     MAX_NCOLS = 256
 
     @staticmethod
     def makeHostName(row, col):
-        return 'h%sx%s' % (row, col)
+        return 'h%dx%d' % (row, col)
 
     @staticmethod
     def parseHostName(hostName):
@@ -26,7 +26,7 @@ class GridTopo(Topo):
                 if row > 0:
                     self.addLink(self.makeHostName(row - 1, col), host)
 
-    def getPortAndIp(self, hostName, side):
+    def __getPortAndIp(self, hostName, side):
         (row, col) = self.parseHostName(hostName)
         otherHost = None
         n = None
@@ -54,8 +54,8 @@ class GridTopo(Topo):
 
         return (ports[0], '10.%s.%s.%s' % (row, col, n))
 
-    def getIp(self, hostName, side):
-        return self.getPortAndIp(hostName, side)[1]
+    def __getIp(self, hostName, side):
+        return self.__getPortAndIp(hostName, side)[1]
 
     def assignIps(self, net):
         """Assign IP addresses to a built network.
@@ -66,7 +66,7 @@ class GridTopo(Topo):
                 host = net.get(hostName)
 
                 for side in ['L', 'R', 'U', 'D']:
-                    (port, ip) = self.getPortAndIp(hostName, side)
+                    (port, ip) = self.__getPortAndIp(hostName, side)
                     if port is not None:
                         intf = host.intfNames()[port]
                         host.setIP(ip, 30, intf)
