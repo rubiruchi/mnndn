@@ -51,15 +51,13 @@ NLSR_CONF_ADVERTISING = """
 ROUTE_ORIGIN_NLSR = 128
 
 class NlsrRouting(Routing):
-    "NLSR routing daemon."
+    """NLSR routing daemon."""
     def __init__(self, host):
-        """initialize NLSR
-           advertised: [prefix]"""
         Routing.__init__(self, host)
         self.isStarted = False
         atexit.register(self.stop)
 
-    def makeConfig(self):
+    def __makeConfig(self):
         neighbors = []
         for (myIntf, peerIntf, ndnPeerIntfs) in self.host.getPeers():
             for ndnPeerIntf in ndnPeerIntfs:
@@ -88,7 +86,7 @@ class NlsrRouting(Routing):
         self.isStarted = True
 
         configFile = self.host.openFile('/etc/ndn/nlsr.conf', 'w')
-        configFile.write(self.makeConfig())
+        configFile.write(self.__makeConfig())
         configFile.close()
 
         # clear logFile

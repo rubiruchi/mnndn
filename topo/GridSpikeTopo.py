@@ -1,4 +1,5 @@
 from GridTopo import GridTopo
+import re
 
 class GridSpikeTopo(GridTopo):
     """Grid topology, plus some end hosts connected to every node on the grid."""
@@ -8,6 +9,14 @@ class GridSpikeTopo(GridTopo):
         if spike is None:
             return GridTopo.makeHostName(row, col)
         return 'h%dx%ds%d' % (row, col, spike)
+
+    @staticmethod
+    def parseHostName(hostName):
+        m = re.match('h(\d+)x(\d+)(?:s(\d+))?', hostName)
+        if m is None:
+            return None, None, None
+        row, col, spike = m.group(1, 2, 3)
+        return int(row), int(col), None if spike is None else int(spike)
 
     def build(self, nRows=2, nCols=2, nSpikes=1):
         GridTopo.build(self, nRows, nCols)
