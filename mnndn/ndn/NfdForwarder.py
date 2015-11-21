@@ -18,10 +18,7 @@ tables
 
   strategy_choice
   {
-    /               /localhost/nfd/strategy/best-route
-    /localhost      /localhost/nfd/strategy/broadcast
-    /localhost/nfd  /localhost/nfd/strategy/best-route
-    /ndn/broadcast  /localhost/nfd/strategy/broadcast
+%(strategy)s
   }
 }
 
@@ -102,6 +99,12 @@ class NfdForwarder(Forwarder):
         Forwarder.__init__(self, host)
         self.isStarted = False
         self.loglevels = dict(default_level='INFO')
+        self.strategyChoices = {
+          '/':'/localhost/nfd/strategy/best-route',
+          '/localhost':'/localhost/nfd/strategy/broadcast',
+          '/localhost/nfd':'/localhost/nfd/strategy/best-route',
+          '/ndn/broadcast':'/localhost/nfd/strategy/broadcast'
+        }
         atexit.register(self.stop)
 
     def setLog(self, level=None, *opts, **kwargs):
@@ -113,8 +116,11 @@ class NfdForwarder(Forwarder):
     def __makeConfig(self):
         logging = [ '  %s %s' % tup for tup in self.loglevels.iteritems() ]
 
+        strategy = [ '    %s %s' % tup for tup in self.strategyChoices.iteritems() ]
+
         return NFD_CONF % dict(
-            logging='\n'.join(logging)
+            logging='\n'.join(logging),
+            strategy='\n'.join(strategy)
           )
 
     def start(self):
@@ -162,4 +168,14 @@ class NfdForwarder(Forwarder):
         self.nfdc('register', name, str(face.id))
 
     def setStrategy(self, prefix, strategy):
-        self.nfdc('set-strategy', prefix, strategy)
+        """Set NFD forwarding strategy.
+           prefix: the namespace, or None to clear strategy setting and choose default strategy."""
+        if self.isStarted:
+            if prefix is None:
+                raise RuntimeError('cannot clear strategy choice after starting NFD')
+            self.nfdc('set-strategy', prefix, strategy)
+        else:
+            if prefix is None:
+                self.strategyChoices.clear()
+                prefix = '/'
+            self.strategyChoices[prefix] = strategy
