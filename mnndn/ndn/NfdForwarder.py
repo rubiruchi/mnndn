@@ -9,7 +9,7 @@ general
 
 log
 {
-  default_level INFO
+%(logging)s
 }
 
 tables
@@ -101,7 +101,21 @@ class NfdForwarder(Forwarder):
     def __init__(self, host, **params):
         Forwarder.__init__(self, host)
         self.isStarted = False
+        self.loglevels = dict(default_level='INFO')
         atexit.register(self.stop)
+
+    def setLog(self, level=None, *opts, **kwargs):
+        if level is not None:
+            for module in opts:
+                self.loglevels[module] = level
+        self.loglevels.update(kwargs)
+
+    def __makeConfig(self):
+        logging = [ '  %s %s' % tup for tup in self.loglevels.iteritems() ]
+
+        return NFD_CONF % dict(
+            logging='\n'.join(logging)
+          )
 
     def start(self):
         if self.isStarted:
@@ -109,7 +123,7 @@ class NfdForwarder(Forwarder):
         self.isStarted = True
 
         configFile = self.host.openFile('/etc/ndn/nfd.conf', 'w')
-        configFile.write(NFD_CONF)
+        configFile.write(self.__makeConfig())
         configFile.close()
 
         self.log = self.host.openFile('/var/log/ndn/nfd.log', 'w')
