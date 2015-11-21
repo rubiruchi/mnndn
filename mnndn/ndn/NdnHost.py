@@ -31,13 +31,31 @@ class NdnHost(Host):
                 break
         return open(realPath, mode)
 
-    def popen(self, *opts, **params):
+    def popen(self, *args, **params):
+        if len(args) == 1:
+            if isinstance(args[0], list):
+                # popen([cmd, arg1, arg2...])
+                cmd = args[0]
+            elif isinstance(args[0], basestring):
+                # popen("cmd arg1 arg2...")
+                cmd = args[0].split()
+            else:
+                raise TypeError('popen() requires a string or list')
+        elif len(args) > 0:
+            # popen( cmd, arg1, arg2... )
+            cmd = list(args)
+
+        if cmd[0][0] != '/' and cmd[0] != 'which':
+            cmdPath, _, whichExit = self.pexec('which', cmd[0])
+            if whichExit == 0:
+                cmd[0] = cmdPath.rstrip()
+
         env = params.get('env', None)
         if env is None:
             env = {}
         env['HOME'] = '/root'
         params['env'] = env
-        return Host.popen(self, *opts, **params)
+        return Host.popen(self, cmd, **params)
 
     @staticmethod
     def __collectNdnPeers(nodeIntf):
