@@ -82,7 +82,7 @@ class NlsrRouting(Routing):
 
     def start(self):
         if self.isStarted:
-            raise "NLSR is already started"
+            raise RuntimeError('NLSR is already started')
         self.isStarted = True
 
         configFile = self.host.openFile('/etc/ndn/nlsr.conf', 'w')

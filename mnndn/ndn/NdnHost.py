@@ -3,7 +3,7 @@ from NfdForwarder import NfdForwarder
 from NlsrRouting import NlsrRouting
 
 class NdnHost(Host):
-    "NDN host."
+    """NDN host."""
     def __init__(self, *opts, **params):
         """Construct NDN host.
            fw: forwarder constructor
@@ -56,7 +56,7 @@ class NdnHost(Host):
         return ndnPeerIntfs
 
     def getPeers(self):
-        "Return (myIntf, peerIntf, [ndnHostIntfs]) for all intfs connecting to."
+        """Return (myIntf, peerIntf, [ndnHostIntfs]) for all intfs connecting to."""
         peers = []
         for intf in self.intfList():
             link = intf.link

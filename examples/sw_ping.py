@@ -9,9 +9,9 @@ from mininet.topo import SingleSwitchTopo
 from mininet.net import Mininet
 from mininet.cli import CLI
 
-from ndn import NdnHost,Routing
-from app import NdnPingServer
-from tracer import NdnDump
+from mnndn.ndn import NdnHost,Routing
+from mnndn.app import NdnPingServer
+from mnndn.tracer import NdnDump
 
 def run():
     topo = SingleSwitchTopo(k=5)

@@ -1,26 +1,26 @@
 class Routing:
-    "NDN routing protocol."
+    """NDN routing protocol."""
     def __init__(self, host):
         self.host = host
         self.advertised = set() # advertised prefixes
 
     def start(self):
-        "Start the routing daemon."
+        """Start the routing daemon."""
         raise NotImplementedError
 
     def stop(self):
-        "Stop the routing daemon."
+        """Stop the routing daemon."""
         raise NotImplementedError
 
     def advertise(self, prefix):
-        "Advertise a prefix."
+        """Advertise a prefix."""
         if prefix in self.advertised:
             return
         self.doAdvertise(prefix)
         self.advertised.add(prefix)
 
     def withdraw(self, prefix):
-        "Withdraw a prefix."
+        """Withdraw a prefix."""
         if prefix not in self.advertised:
             return
         self.doWithdraw(prefix)
@@ -33,7 +33,7 @@ class Routing:
         raise NotImplementedError
 
     def getRoutes(self):
-        "Return list of installed routes."
+        """Return list of installed routes."""
         wh = self.beginGetRoutes()
         return self.endGetRoutes(wh)
 

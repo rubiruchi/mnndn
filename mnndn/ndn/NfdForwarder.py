@@ -97,7 +97,7 @@ rib
 """
 
 class NfdForwarder(Forwarder):
-    "NFD forwarder."
+    """NFD forwarder."""
     def __init__(self, host, **params):
         Forwarder.__init__(self, host)
         self.isStarted = False
@@ -105,7 +105,7 @@ class NfdForwarder(Forwarder):
 
     def start(self):
         if self.isStarted:
-            raise "NFD is already started"
+            raise RuntimeError('NFD is already started')
         self.isStarted = True
 
         configFile = self.host.openFile('/etc/ndn/nfd.conf', 'w')

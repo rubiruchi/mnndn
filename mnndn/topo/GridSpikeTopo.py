@@ -29,8 +29,8 @@ class GridSpikeTopo(GridTopo):
                     self.addLink(gridHost, host)
 
     def assignIps(self, *args, **kwargs):
-        raise TypeError("GridSpikeTopo does not support assignIps; " +
-                        "use mnndn.topo.assignIps instead")
+        raise TypeError('GridSpikeTopo does not support assignIps; ' +
+                        'use mnndn.topo.assignIps instead')
 
     def gridNodes(self):
         """Iterates node names of grid nodes."""

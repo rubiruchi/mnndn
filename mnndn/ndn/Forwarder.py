@@ -5,16 +5,16 @@ class Face:
         self.remoteIntf = remoteIntf
 
 class Forwarder:
-    "NDN forwarder."
+    """NDN forwarder."""
     def __init__(self, host):
         self.host = host
 
     def start(self):
-        "Start the forwarder."
+        """Start the forwarder."""
         raise NotImplementedError
 
     def stop(self):
-        "Stop the forwarder."
+        """Stop the forwarder."""
         raise NotImplementedError
 
     def addFace(self, localIntf, remoteIntf):
@@ -23,7 +23,7 @@ class Forwarder:
         raise NotImplementedError
 
     def addRoute(self, face, name):
-        "Add a route."
+        """Add a route."""
         raise NotImplementedError
 
     @staticmethod

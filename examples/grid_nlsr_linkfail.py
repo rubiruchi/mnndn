@@ -7,10 +7,10 @@ from mininet.log import setLogLevel
 from mininet.net import Mininet
 from mininet.link import TCLink
 
-from topo import GridTopo
-from ndn import NdnHost,Routing
-from app import NdnPing,NdnPingServer
-from tracer import NdnDump
+from mnndn.topo import GridTopo
+from mnndn.ndn import NdnHost,Routing
+from mnndn.app import NdnPing,NdnPingServer
+from mnndn.tracer import NdnDump
 
 def parseCommandLine():
     import argparse

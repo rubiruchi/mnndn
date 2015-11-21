@@ -1,5 +1,5 @@
 from Routing import Routing
-from topo import dijkstra
+from mnndn.topo import dijkstra
 
 class StaticRouting(Routing):
     """Static routes setup."""
@@ -21,12 +21,12 @@ class StaticRouting(Routing):
 
     def doAdvertise(self, prefix):
         if self.net is None:
-            raise RuntimeError("cannot advertise before starting")
+            raise RuntimeError('cannot advertise before starting')
         for dName, uName in self.edges:
             dHost, uHost = self.net[dName], self.net[uName]
             connections = dHost.connectionsTo(uHost)
             if len(connections) < 1:
-                raise IndexError("no connection available from %s to %s" % (dName, uName))
+                raise IndexError('no connection available from %s to %s' % (dName, uName))
             dFw, dRout = dHost.getFw(), dHost.getRout()
             if not isinstance(dRout, StaticRouting):
                 continue

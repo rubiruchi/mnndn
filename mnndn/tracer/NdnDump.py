@@ -1,7 +1,7 @@
 import atexit
 
 class NdnDump:
-    "Capture NDN packets on a link."
+    """Capture NDN packets on a link."""
     def __init__(self, link):
         self.link = link
         self.host = link.intf1.node
@@ -10,7 +10,7 @@ class NdnDump:
 
     def start(self, logFile=None):
         if self.isStarted:
-            raise "ndndump is already started"
+            raise RuntimeError('ndndump is already started')
         self.isStarted = True
 
         if logFile is None:

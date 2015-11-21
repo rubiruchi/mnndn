@@ -8,8 +8,8 @@ from mininet.log import setLogLevel
 from mininet.net import Mininet
 from mininet.cli import CLI
 
-from ndn import NdnHost, StaticRouting
-from topo import GridSpikeTopo, assignIps
+from mnndn.ndn import NdnHost,StaticRouting
+from mnndn.topo import GridSpikeTopo,assignIps
 
 def run():
     topo = GridSpikeTopo(3, 3, 1)
