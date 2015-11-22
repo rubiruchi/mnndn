@@ -47,7 +47,7 @@ face_system
 
     keep_alive_interval 25
 
-    mcast yes
+    mcast %(udpmcast)s
     mcast_port 56363
     mcast_group 224.0.23.170
   }
@@ -105,6 +105,7 @@ class NfdForwarder(Forwarder):
           '/localhost/nfd':'/localhost/nfd/strategy/best-route',
           '/ndn/broadcast':'/localhost/nfd/strategy/broadcast'
         }
+        self.hasUdpMcast = True
         atexit.register(self.stop)
 
     def setLog(self, level=None, *opts, **kwargs):
@@ -120,7 +121,8 @@ class NfdForwarder(Forwarder):
 
         return NFD_CONF % dict(
             logging='\n'.join(logging),
-            strategy='\n'.join(strategy)
+            strategy='\n'.join(strategy),
+            udpmcast='yes' if self.hasUdpMcast else 'no'
           )
 
     def start(self):
