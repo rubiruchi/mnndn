@@ -4,24 +4,16 @@
 import time
 
 from mininet.log import setLogLevel
-from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.cli import CLI
 
+from mnndn.topo import HostLinearTopo
 from mnndn.ndn import NdnHost,Routing
 from mnndn.app import NdnPingServer
 from mnndn.tracer import NdnDump
 
-class TwoNodeTopo(Topo):
-    """Two node directly connected topology.
-       This differs from mininet.topo.MinimalTopo in that there's no switch."""
-    def build(self, **params):
-        self.addHost('h1')
-        self.addHost('h2')
-        self.addLink('h1', 'h2')
-
 def run():
-    topo = TwoNodeTopo()
+    topo = HostLinearTopo(k=2)
     net = Mininet(topo, host=NdnHost, controller=None)
     net.start()
 

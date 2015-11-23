@@ -21,4 +21,4 @@
 
 1.  copy `examples/minimal_ping.py` from **mnndn** to anywhere on your system
 2.  execute `sudo PYTHONPATH=/where/is/mnndn python ./minimal_ping.py`
-3.  when the CLI starts, try `h1 ndnping /h2` and `h2 ndnping /h1`
+3.  when the CLI starts, try `h0 ndnping /h1` and `h1 ndnping /h0`
