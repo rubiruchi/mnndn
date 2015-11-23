@@ -11,6 +11,7 @@ from mnndn.topo import GridTopo
 from mnndn.ndn import NdnHost,Routing
 from mnndn.app import NdnPing,NdnPingServer
 from mnndn.tracer import NdnDump
+from mnndn.net import LinkFailure
 
 def parseCommandLine():
     import argparse
@@ -50,24 +51,12 @@ def parseCommandLine():
 
     return args
 
-def schedLinkFails(sched, net, linkFails):
-    def fail(intf):
-        intf.config(loss=100)
-    def recover(intf):
-        # loss=0 alone would be ignored, so we add bw=1000
-        intf.config(bw=1000, loss=0)
-    def do(t, h1, h2, act):
-        print '%d %s %s-%s' % (t, act.func_name, h1.name, h2.name)
-        connections = h1.connectionsTo(h2)
-        for (intf1, intf2) in connections:
-            act(intf1)
-            act(intf2)
-
+def schedLinkFails(lf, linkFails):
     for (x1, y1, x2, y2, t1, t2) in linkFails:
-        h1 = net.get(GridTopo.makeHostName(x1, y1))
-        h2 = net.get(GridTopo.makeHostName(x2, y2))
-        sched.enter(t1, 0, do, (t1, h1, h2, fail))
-        sched.enter(t2, 0, do, (t2, h1, h2, recover))
+        h1 = GridTopo.makeHostName(x1, y1)
+        h2 = GridTopo.makeHostName(x2, y2)
+        lf.fail(h1, h2, t1)
+        lf.recover(h1, h2, t2)
 
 def run(args):
     topo = GridTopo(args.rows, args.cols)
@@ -115,7 +104,8 @@ def run(args):
                 pingClients.append(pingClient)
 
     sched = scheduler(time.time, time.sleep)
-    schedLinkFails(sched, net, args.linkFails)
+    lf = LinkFailure(net, sched)
+    schedLinkFails(lf, args.linkFails)
     sched.enter(args.duration, 0, lambda:0, ())
     sched.run()
 
