@@ -5,7 +5,8 @@ class NdnHost(Host):
     def __init__(self, *opts, **params):
         """Construct NDN host.
            fw: forwarder constructor
-           rout: routing constructor"""
+           rout: routing constructor
+           env: base environ for popen"""
         OVERRIDE_DIRS = ['/etc/ndn', '/var/log/ndn', '/var/run', '/root']
         privateDirs = params.get('privateDirs', [])
         privateDirs = [ pd for pd in privateDirs if pd[0] not in OVERRIDE_DIRS ]
@@ -20,6 +21,7 @@ class NdnHost(Host):
         from NlsrRouting import NlsrRouting
         self.fwCtor = params.pop('fw', NfdForwarder)
         self.routCtor = params.pop('rout', NlsrRouting)
+        self.env = params.pop('env', {})
 
         self.fw = None
         self.rout = None
@@ -51,9 +53,8 @@ class NdnHost(Host):
             if whichExit == 0:
                 cmd[0] = cmdPath.rstrip()
 
-        env = params.get('env', None)
-        if env is None:
-            env = {}
+        env = self.env
+        env.update(params.get('env', {}))
         env['HOME'] = '/root'
         params['env'] = env
         return Host.popen(self, cmd, **params)
