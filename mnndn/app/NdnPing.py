@@ -2,11 +2,15 @@ import atexit
 import os
 
 class NdnPing:
-    "NDN reachability testing client."
-    def __init__(self, host, prefix, interval=1000, clientSpecifier=True):
+    """NDN reachability testing client."""
+
+    DEFAULT_INTERVAL = 1000
+
+    def __init__(self, host, prefix, interval=DEFAULT_INTERVAL, count=None, clientSpecifier=True):
         self.host = host
         self.prefix = prefix
         self.interval = interval
+        self.count = count
         self.clientSpecifier = clientSpecifier
         if clientSpecifier is True:
             self.clientSpecifier = self.host.name
@@ -14,7 +18,7 @@ class NdnPing:
         self.isStarted = False
         atexit.register(self.stop)
 
-    def start(self, logFile = None):
+    def start(self, logFile=None):
         if self.isStarted:
             raise "ndnping is already started"
         self.isStarted = True
@@ -27,6 +31,8 @@ class NdnPing:
         opts = ['-t', '-i', str(self.interval)]
         if self.clientSpecifier is not False:
             opts += ['-p', self.clientSpecifier]
+        if self.count is not None:
+            opts += ['-c', str(self.count)]
         opts.append(self.prefix)
         from subprocess import STDOUT
         self.process = self.host.popen('ndnping', *opts,
@@ -35,7 +41,7 @@ class NdnPing:
     def stop(self):
         if not self.isStarted:
             return
-        self.process.kill()
+        self.process.send_signal(2)
         self.process.wait()
         self.process = None
         self.log.close()
