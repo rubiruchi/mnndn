@@ -14,7 +14,7 @@ log
 
 tables
 {
-  cs_max_packets 4096
+  cs_max_packets %(cscapacity)d
 
   strategy_choice
   {
@@ -96,8 +96,6 @@ rib
 class NfdForwarder(Forwarder):
     """NFD forwarder."""
     def __init__(self, host, **params):
-        Forwarder.__init__(self, host)
-        self.isStarted = False
         self.loglevels = dict(default_level='INFO')
         self.strategyChoices = {
           '/':'/localhost/nfd/strategy/best-route',
@@ -106,13 +104,23 @@ class NfdForwarder(Forwarder):
           '/ndn/broadcast':'/localhost/nfd/strategy/broadcast'
         }
         self.hasUdpMcast = True
+        self.csCapacity = 4096
+
+        for k, v in params.iteritems():
+            if hasattr(self, k):
+                setattr(self, k, v)
+            else:
+                raise KeyError('NfdForwarder does not recognize %s option' % k)
+
+        Forwarder.__init__(self, host)
+        self.isStarted = False
         atexit.register(self.stop)
 
-    def setLog(self, level=None, *opts, **kwargs):
+    def setLog(self, level=None, *opts, **params):
         if level is not None:
             for module in opts:
                 self.loglevels[module] = level
-        self.loglevels.update(kwargs)
+        self.loglevels.update(params)
 
     def __makeConfig(self):
         logging = [ '  %s %s' % tup for tup in self.loglevels.iteritems() ]
@@ -122,6 +130,7 @@ class NfdForwarder(Forwarder):
         return NFD_CONF % dict(
             logging='\n'.join(logging),
             strategy='\n'.join(strategy),
+            cscapacity=self.csCapacity,
             udpmcast='yes' if self.hasUdpMcast else 'no'
           )
 
