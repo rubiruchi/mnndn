@@ -6,7 +6,13 @@ class NdnPing:
 
     DEFAULT_INTERVAL = 1000
 
-    def __init__(self, host, prefix, interval=DEFAULT_INTERVAL, count=None, clientSpecifier=True):
+    def __init__(self, host, prefix, interval=DEFAULT_INTERVAL, count=None, clientSpecifier=True, cmdArgs=None):
+        """host: NdnHost instance
+           prefix: NDN prefix of NdnPingServer
+           interval: interval between probes (in milliseconds)
+           count: total number of probes
+           clientSpecifier: whether to add a client specifier in probe name
+           cmdArgs: additional command line argument (as a string) to ndnping program"""
         self.host = host
         self.prefix = prefix
         self.interval = interval
@@ -14,6 +20,7 @@ class NdnPing:
         self.clientSpecifier = clientSpecifier
         if clientSpecifier is True:
             self.clientSpecifier = self.host.name
+        self.cmdArgs = cmdArgs
 
         self.isStarted = False
         atexit.register(self.stop)
@@ -33,6 +40,8 @@ class NdnPing:
             opts += ['-p', self.clientSpecifier]
         if self.count is not None:
             opts += ['-c', str(self.count)]
+        if self.cmdArgs is not None:
+            opts += self.cmdArgs.split(' ')
         opts.append(self.prefix)
         from subprocess import STDOUT
         self.process = self.host.popen('ndnping', *opts,
