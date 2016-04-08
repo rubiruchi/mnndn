@@ -67,7 +67,7 @@ class LinkFailure:
            t: if not None, schedule at a future time
            cb: if callable, call this function after recovering link"""
         if t is None:
-            self.__do(h1, h2, True, cb)
+            self.__do(h1, h2, False, cb)
         else:
             if self.sched is None:
                 raise TypeError('scheduler is unavailable')
