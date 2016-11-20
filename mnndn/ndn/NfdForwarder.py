@@ -99,9 +99,9 @@ class NfdForwarder(Forwarder):
         self.loglevels = dict(default_level='INFO')
         self.strategyChoices = {
           '/':'/localhost/nfd/strategy/best-route',
-          '/localhost':'/localhost/nfd/strategy/broadcast',
+          '/localhost':'/localhost/nfd/strategy/multicast',
           '/localhost/nfd':'/localhost/nfd/strategy/best-route',
-          '/ndn/broadcast':'/localhost/nfd/strategy/broadcast'
+          '/ndn/broadcast':'/localhost/nfd/strategy/multicast'
         }
         self.hasUdpMcast = True
         self.csCapacity = 4096
