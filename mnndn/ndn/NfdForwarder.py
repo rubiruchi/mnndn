@@ -103,6 +103,7 @@ class NfdForwarder(Forwarder):
         }
         self.hasUdpMcast = True
         self.csCapacity = 4096
+        self.wantCompressLog = False
 
         for k, v in params.iteritems():
             if hasattr(self, k):
@@ -141,17 +142,35 @@ class NfdForwarder(Forwarder):
         configFile.write(self.__makeConfig())
         configFile.close()
 
-        self.log = self.host.openFile('/var/log/ndn/nfd.log', 'w')
-        from subprocess import STDOUT
+        import subprocess
+
+        logname = '/var/log/ndn/nfd.log'
+        if self.wantCompressLog:
+            logname += '.xz'
+        log = self.log = self.host.openFile(logname, 'w')
+        self.logProcess = None
+        if self.wantCompressLog:
+            self.logProcess = self.host.popen('xz', stdin=subprocess.PIPE,
+                                              stdout=self.log, stderr=subprocess.STDOUT)
+            log = self.logProcess.stdin
+
         self.process = self.host.popen('nfd', '--config', '/etc/ndn/nfd.conf',
-                                       stderr=STDOUT, stdout=self.log)
+                                       stderr=subprocess.STDOUT, stdout=log)
 
     def stop(self):
         if not self.isStarted:
             return
         self.process.kill()
+        if self.logProcess is not None:
+            self.logProcess.communicate()
+            try:
+                self.logProcess.kill()
+            except OSError:
+                pass
         self.process.wait()
-        self.process = None
+        if self.logProcess is not None:
+            self.logProcess.wait()
+        self.process = self.logProcess = None
         self.log.close()
         self.isStarted = False
 
