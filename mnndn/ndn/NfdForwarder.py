@@ -45,8 +45,6 @@ face_system
 
     idle_timeout 600
 
-    keep_alive_interval 25
-
     mcast %(udpmcast)s
     mcast_port 56363
     mcast_group 224.0.23.170
