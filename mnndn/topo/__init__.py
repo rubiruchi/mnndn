@@ -1,3 +1,4 @@
+from TreeTopo import TreeTopo
 from GridTopo import GridTopo
 from GridSpikeTopo import GridSpikeTopo
 from HostLinearTopo import HostLinearTopo
