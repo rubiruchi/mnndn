@@ -28,7 +28,7 @@ class GridSpikeTopo(GridTopo):
                     host = self.addHost(self.makeHostName(row, col, spike))
                     self.addLink(gridHost, host)
 
-    def assignIps(self, *args, **kwargs):
+    def assignIps(self, net):
         raise TypeError('GridSpikeTopo does not support assignIps; ' +
                         'use mnndn.topo.assignIps instead')
 
