@@ -3,18 +3,22 @@ from mininet.topo import Topo
 class TreeTopo(Topo):
     """Tree topology."""
 
-    def build(self, depth=1, fanout=2):
-        assert fanout > 0
-        self.depth = depth
-        self.fanout = fanout
-        self.addHost('root')
-        self.__addTree('root', depth, fanout)
+    def build(self, height=1, degree=2, prefix='h'):
+        assert height > 0
+        assert degree > 0
+        assert degree <= 26
+        assert prefix != ''
+        self.height = height
+        self.degree = degree
+        self.addHost(prefix, mnndn_tree_depth=0)
+        self.__addTree(prefix, height, degree)
 
-    def __addTree(self, root, depth, fanout):
-        if depth <= 1:
+    def __addTree(self, root, height, degree):
+        """Add subtree."""
+        if height <= 0:
             return
-        for i in range(fanout):
-            host = 'h%d' % i if root == 'root' else '%sx%d' % (root, i)
-            self.addHost(host)
+        for i in range(degree):
+            host = '%s%s' % (root, chr(i + ord('a')))
+            self.addHost(host, mnndn_tree_depth=(self.height - height))
             self.addLink(root, host)
-            self.__addTree(host, depth - 1, fanout)
+            self.__addTree(host, height - 1, degree)
