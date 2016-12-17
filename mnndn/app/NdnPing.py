@@ -58,9 +58,20 @@ class NdnPing:
 
 class NdnPingServer:
     "NDN reachability testing server."
-    def __init__(self, host, prefix):
+
+    DEFAULT_PAYLOAD_SIZE = 0
+
+    def __init__(self, host, prefix, payloadSize=DEFAULT_PAYLOAD_SIZE, freshnessPeriod=None, cmdArgs=None):
+        """host: NdnHost instance
+           prefix: NDN prefix of NdnPingServer
+           payloadSize: payload size (in octets)
+           freshnessPeriod: freshness period (in milliseconds)
+           cmdArgs: additional command line argument (as a string) to ndnpingserver program"""
         self.host = host
         self.prefix = prefix
+        self.payloadSize = payloadSize
+        self.freshnessPeriod = freshnessPeriod
+        self.cmdArgs = cmdArgs
 
         self.isStarted = False
         atexit.register(self.stop)
@@ -70,9 +81,16 @@ class NdnPingServer:
             raise "ndnpingserver is already started"
         self.isStarted = True
 
+        opts = ['-s', str(self.payloadSize)]
+        if self.freshnessPeriod is not None:
+            opts += ['-x', str(self.freshnessPeriod)]
+        if self.cmdArgs is not None:
+            opts += self.cmdArgs.split(' ')
+        opts.append(self.prefix)
+
         self.log = open(os.devnull, 'wb')
         from subprocess import STDOUT
-        self.process = self.host.popen('ndnpingserver', self.prefix,
+        self.process = self.host.popen('ndnpingserver', *opts,
                                        stderr=STDOUT, stdout=self.log)
 
     def stop(self):
