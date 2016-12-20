@@ -19,6 +19,6 @@ class TreeTopo(Topo):
             return
         for i in range(degree):
             host = '%s%s' % (root, chr(i + ord('a')))
-            self.addHost(host, mnndn_tree_depth=(self.height - height))
+            self.addHost(host, mnndn_tree_depth=(self.height - height + 1))
             self.addLink(root, host)
             self.__addTree(host, height - 1, degree)
