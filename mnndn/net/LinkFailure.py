@@ -46,8 +46,9 @@ class LinkFailure:
             raise TypeError('interface is not TCIntf')
 
         isFailed = intf in self.failedIntfs
-        delay = self.intfDelays.get(intf, 0)
-        intf.config(bw=1000, loss=(100 if isFailed else 0), delay=('%dms' % delay))
+        delay = self.intfDelays.get(intf, None)
+        intf.config(bw=1000, loss=(100 if isFailed else 0),
+                    delay=(None if delay is None else ('%dms' % delay)))
 
     def fail(self, h1, h2, t=None, cb=None):
         """Fail links between h1 and h2.
