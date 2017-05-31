@@ -185,15 +185,15 @@ class NfdForwarder(Forwarder):
 
     def addFace(self, localIntf, remoteIntf):
         remoteUri = 'udp4://%s:%d' % (remoteIntf.node.IP(remoteIntf), 6363)
-        out, _, _ = self.nfdc('create', '-P', remoteUri)
-        match = re.search('FaceId:\s(\d+),', out)
+        out, _, _ = self.nfdc('face', 'create', remoteUri, 'permanent')
+        match = re.search(' id=(\d+)', out)
         if not match:
             raise RuntimeError('cannot parse nfdc output: ' + out)
         faceId = int(match.group(1))
         return Face(faceId, localIntf, remoteIntf)
 
     def addRoute(self, face, name):
-        self.nfdc('register', name, str(face.id))
+        self.nfdc('route', 'add', name, str(face.id))
 
     def setStrategy(self, prefix, strategy):
         """Set NFD forwarding strategy.
@@ -201,7 +201,7 @@ class NfdForwarder(Forwarder):
         if self.isStarted:
             if prefix is None:
                 raise RuntimeError('cannot clear strategy choice after starting NFD')
-            self.nfdc('set-strategy', prefix, strategy)
+            self.nfdc('strategy', 'set', prefix, strategy)
         else:
             if prefix is None:
                 self.strategyChoices.clear()
